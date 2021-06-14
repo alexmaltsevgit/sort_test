@@ -141,11 +141,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Andrey.cpp" />
+    <ClCompile Include="MergeSort.cpp" />
     <ClCompile Include="TestSort.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ISort.h" />
+    <ClInclude Include="MergeSort.h" />
+    <ClInclude Include="NaturalMergeSort.h" />
     <ClInclude Include="QuickSort.h" />
+    <ClInclude Include="RadixSort.h" />
     <ClInclude Include="TestSort.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>

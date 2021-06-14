@@ -9,7 +9,7 @@
 
 class TestSort {
 private:
-	std::vector<ISort> sorts;
+	std::vector<ISort*> sorts;
 	std::fstream* unordered = nullptr;
 	std::fstream* ordered = nullptr;
 	std::fstream* reversed_ordered = nullptr;
@@ -22,7 +22,7 @@ public:
 		sorts()
 	{};
 
-	TestSort(std::initializer_list<ISort> init) :
+	TestSort(std::initializer_list<ISort*> init) :
 		sorts(init)
 	{}
 
@@ -39,31 +39,31 @@ public:
 				sort,
 				{unordered, ordered, reversed_ordered},
 				elements_count,
-				'\t' + sort.name
+				'\t' + sort->name
 			);
 		}
 	}
 
-	void test_few(ISort& sort, std::vector<std::fstream*> data, int elements_count, std::string_view message = "") {
+	void test_few(ISort* sort, std::vector<std::fstream*> data, int elements_count, std::string_view message = "") {
 		for (const auto& datum : data) {
 			test_one(sort, datum, elements_count, message);
 		}
 	}
 
-	void test_one(ISort& sort, std::fstream* data, int elements_count, std::string_view message = "") {
+	void test_one(ISort* sort, std::fstream* data, int elements_count, std::string_view message = "") {
 		using std::cout, std::endl;
 
 		cout << message << '\n';
 		cout << "Получаем данные..." << '\n';
 		auto unord_vec = get_array_from_fstream(data, elements_count);
 		Timer timer;
-		sort(unord_vec, elements_count);
+		sort->operator()(unord_vec, elements_count);
 		cout << "Затраченное время: " << timer.elapse() << " секунд.\n";
-		cout << "Количество сравнений: " << sort.comparisons_count << '\n';
-		cout << "Количество перестановок: " << sort.permutations_count << '\n' << endl;
+		cout << "Количество сравнений: " << sort->comparisons_count << '\n';
+		cout << "Количество перестановок: " << sort->permutations_count << '\n' << endl;
 	}
 
-	void add_sort(ISort sort) {
+	void add_sort(ISort* sort) {
 		sorts.push_back(sort);
 	}
 
@@ -79,7 +79,7 @@ public:
 		ordered = file;
 	}
 
-	void set_ordered_file(std::fstream* file) {
+	void set_reversed_ordered_file(std::fstream* file) {
 		reversed_ordered = file;
 	}
 
@@ -92,7 +92,7 @@ public:
 	void generate_unordered(int elements_count, const std::string& path) {
 		std::srand(std::time(nullptr));
 
-		unordered->open(path + "unordered.txt", std::ios::in || std::ios::out);
+		unordered->open(path + "unordered.txt");
 		for (int i = 0; i < elements_count; i++) {
 			*unordered << -100 + rand() % 100;
 		}
@@ -102,7 +102,7 @@ public:
 		std::srand(std::time(nullptr));
 		std::vector<int> tmp{elements_count};
 
-		unordered->open(path + "ordered.txt", std::ios::in || std::ios::out);
+		unordered->open(path + "ordered.txt");
 		for (int i = 0; i < elements_count; i++) {
 			std::sort(tmp.begin(), tmp.end());
 		}
@@ -112,9 +112,9 @@ public:
 		std::srand(std::time(nullptr));
 		std::vector<int> tmp{ elements_count };
 
-		unordered->open(path + "ordered_reversed.txt", std::ios::in || std::ios::out);
+		unordered->open(path + "ordered_reversed.txt");
 		for (int i = 0; i < elements_count; i++) {
-			std::sort(tmp.begin(), tmp.end(), [](int a, int b) {a > b;});
+			std::sort(tmp.begin(), tmp.end());
 		}
 	}
 
@@ -135,6 +135,7 @@ private:
 
 	#pragma region DESTRUCTOR
 
+public:
 	~TestSort() {
 		if (unordered) unordered->close();
 		if (ordered) ordered->close();

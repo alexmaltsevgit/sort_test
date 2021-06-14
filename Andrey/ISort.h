@@ -1,7 +1,9 @@
 #pragma once
+#include <string>
+
 class ISort {
 public:
-	const std::string name;
+	std::string name = "";
 	int comparisons_count = 0;
 	int permutations_count = 0;
 
