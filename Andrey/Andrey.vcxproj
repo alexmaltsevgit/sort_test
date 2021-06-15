@@ -141,7 +141,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Andrey.cpp" />
-    <ClCompile Include="MergeSort.cpp" />
     <ClCompile Include="TestSort.cpp" />
   </ItemGroup>
   <ItemGroup>
