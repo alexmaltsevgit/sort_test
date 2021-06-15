@@ -23,7 +23,7 @@ private:
   }
 
   void merge(int* c, int* d, int l, int m, int r) {
-    int i = l, j = m + 1, k = r;
+    int i = l, j = m + 1;
 
     while ((i <= m) && (j <= r)) {
       if (c[i] <= c[j])

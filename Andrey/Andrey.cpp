@@ -14,19 +14,21 @@ enum class Modes : int {
 
 int main() {
 	// change this to test for another array size
-	constexpr int mode = static_cast<int>(Modes::N1);
+	constexpr int mode = static_cast<int>(Modes::N4);
 
 	// change this to choose another path
 	std::filesystem::path path = "../";
 
-	std::string absolute_path = std::filesystem::absolute(path).string();
 	TestSort test{
 		new QuickSort(),
 		new MergeSort(),
-		new NaturalMergeSort(),
+		//new NaturalMergeSort(),
 		new RadixSort()
 	};
 
+	std::string absolute_path = std::filesystem::absolute(path).string();
 	test.generate_all_files(mode, absolute_path);
 	test.start(mode);
+
+	system("PAUSE");
 }
