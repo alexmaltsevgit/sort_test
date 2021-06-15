@@ -18,8 +18,8 @@ private:
     int* temp = new int[length];
     int left = left_low;
     int right = right_low;
+
     for (int i = 0; i < length; ++i) {
-      comparisons_count++;
       if (left > left_high) {
         temp[i] = a[right++];
         comparisons_count += 2;
@@ -51,7 +51,7 @@ public:
 		name = "СОРТИРОВКА СЛИЯНИЕМ";
 	}
 
-	virtual void operator()(int* array, int length) override {
+	virtual void operator()(int* array, const size_t length) override {
     merge_sort(array, 0, length - 1);
 	}
 };

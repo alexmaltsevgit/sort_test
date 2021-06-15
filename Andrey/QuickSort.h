@@ -7,7 +7,7 @@ public:
     name = "БЫСТРАЯ СОРТИРОВКА";
   }
 
-	virtual void operator()(int* array, int length) override {
+	virtual void operator()(int* array, const size_t length) override {
     int low = array[0];
     int high = array[length - 1];
     

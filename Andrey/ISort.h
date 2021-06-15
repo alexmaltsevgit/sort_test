@@ -19,6 +19,6 @@ protected:
 	}
 
 public:
-	virtual void operator()(int* array, int length) = 0;
+	virtual void operator()(int* array, const size_t length) = 0;
 };
 
