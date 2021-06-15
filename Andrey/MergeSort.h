@@ -37,7 +37,7 @@ private:
         comparisons_count += 5;
       }
 
-      permutations_count++;
+      reassignments_count++;
     }
 
     for (int i = 0; i < length; ++i)

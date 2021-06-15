@@ -55,20 +55,20 @@ public:
 
 	void test_one(
 		ISort* sort,
-		std::filesystem::path path,
+		const std::filesystem::path& path,
 		int elements_count,
 		std::string_view message = ""
 	) {
 		using std::cout, std::endl;
 
 		cout << message << '\n';
-		cout << "Получаем данные..." << '\n';
 		int* arr = get_array_from_file(path, elements_count);
 		Timer timer;
 		sort->operator()(arr, elements_count);
+		cout << "Файл: " << path << '\n';
 		cout << "Затраченное время: " << timer.elapse() << " секунд.\n";
 		cout << "Количество сравнений: " << sort->comparisons_count << '\n';
-		cout << "Количество перестановок: " << sort->permutations_count << '\n' << endl;
+		cout << "Количество переприсваиваний: " << sort->reassignments_count << '\n' << endl;
 
 		delete[] arr;
 	}
@@ -81,16 +81,18 @@ public:
 
 	#pragma region FILE
 
-	void generate_all_files(int elements_count, const std::string& path) {
-		generate_unordered(elements_count, path);
-		generate_ordered(elements_count, path);
-		generate_reversed_ordered(elements_count, path);
+	void generate_all_files(int elements_count) {
+		generate_unordered(elements_count, unordered);
+		generate_ordered(elements_count, ordered);
+		generate_reversed_ordered(elements_count, reversed_ordered);
 	}
 
 	void generate_unordered(int elements_count, const std::filesystem::path& path) {
 		std::srand(std::time(nullptr));
 
-		std::fstream out{ path };
+		std::ofstream out;
+		out.open(path, std::ios::out);
+
 		for (int i = 0; i < elements_count; i++) {
 			out << -50 + rand() % 100 << " ";
 		}
@@ -103,7 +105,9 @@ public:
 		std::vector<int> tmp;
 		tmp.resize(elements_count);
 
-		std::fstream out{ path };
+		std::ofstream out;
+		out.open(path, std::ios::out);
+
 		for (auto& i : tmp)
 			i = -50 + rand() % 100;
 		std::sort(tmp.begin(), tmp.end());
@@ -118,7 +122,9 @@ public:
 		std::vector<int> tmp;
 		tmp.resize(elements_count);
 
-		std::fstream out{ path };
+		std::ofstream out;
+		out.open(path, std::ios::out);
+
 		for (auto& i : tmp)
 			i = -50 + rand() % 100;
 		std::sort(tmp.begin(), tmp.end(), [](const int& a, const int& b) -> bool { return a > b; });

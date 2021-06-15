@@ -2,51 +2,46 @@
 #include "ISort.h"
 class NaturalMergeSort : public ISort {
 private:
-  int t[9] = {0};
-  int ta = 0;
+  void merge(int* arr, int first, int mid, int last) {
+    // Merges two contigous sub-arrays and sorts them out-of-place
+    // Condition Required: Sub-arrays must be sorted individually
+    int* l = new int[mid - first];
+    int* r = new int[last - mid];
+    int* tempArr = new int[last - first];
 
-private:
-  void merge_pass(int* x, int* y, int s, int n) {
-    int i = 0;
-    while (i <= ta - 2 * s) {
-      int r = ((i + 2 * s) < ta) ? t[i + 2 * s] : n;
-
-      merge(x, y, t[i], t[i + s] - 1, r - 1);
-      i = i + 2 * s;
+    // copying into new arrays
+    for (int i = 0, j = first; i < mid - first; ++i, ++j) {
+      l[i] = arr[j];
+      reassignments_count++;
     }
-    if (i + s < ta)
-      merge(x, y, t[i], t[i + s] - 1, n - 1);
-    else if (i < ta) {
-      for (int j = t[i]; j <= n - 1; j++)
-        y[j] = x[j];
+    for (int i = 0, j = mid; i < last - mid; ++i, ++j) {
+      r[i] = arr[j];
+      reassignments_count++;
     }
-  }
 
-  void merge(int* c, int* d, int l, int m, int r) {
-    int i = l, j = m + 1;
-
-    while ((i <= m) && (j <= r)) {
-      if (c[i] <= c[j])
-        d[l++] = c[i++];
-      else
-        d[l++] = c[j++];
+    // merge
+    for (int i = 0, j = 0, k = 0; k < last - first; ++k) {
+      if (i == mid - first) {
+        tempArr[k] = r[j++];
+        comparisons_count++;
+      } else if (j == last - mid) {
+        tempArr[k] = l[i++];
+        comparisons_count += 2;
+      } else {
+        (l[i] < r[j]) ? (tempArr[k] = l[i++]) : (tempArr[k] = r[j++]);
+        comparisons_count += 3;
+      }
     }
-    if (i > m)
-      for (int q = j; q <= r; q++)
-        d[l++] = c[q];
-    else
-      for (int p = i; p <= m; p++)
-        d[l++] = c[p];
-  }
 
-  void get_bpoint(int* a, int* b, int n, int& m) {
-    int j = 0;
-    b[j++] = 0;
-    for (int i = 0; i < n - 1; i++) {
-      if (a[i + 1] < a[i])
-        b[j++] = i + 1;
+    // copy into original array
+    for (int i = first, j = 0; j < last - first; ++i, ++j) {
+      arr[i] = tempArr[j];
+      reassignments_count++;
     }
-    m = j;
+
+    delete[] l;
+    delete[] r;
+    delete[] tempArr;
   }
 
 public:
@@ -55,18 +50,33 @@ public:
 	}
 
 	virtual void operator()(int* array, const size_t length) override {
-    int t[9];
-    int ta;
-
-    get_bpoint(array, t, length, ta);
-
-    int* b = new int[length];
-    int s = 1;
-    while (s < ta) {
-      merge_pass(array, b, s, length);
-      s += s;
-      merge_pass(b, array, s, length);
-      s += s;
+    if (length == 0) return;
+    // width determines the length of the 2 arrays, the contiguous
+    // arrays which are sent to the mergeOutOfPlace function.
+    size_t width = 2;
+    // we select arrays with length = power of 2.
+    for (; width < length; width *= 2) {
+      // iterating backwards as iterating forward 
+      // does not work. mergeOutOfPlace is common 
+      // for different merge algorithms. When iterating 
+      // forward the left array has a bug
+      int next = length - width, curr = length;
+      for (; next >= 0; curr = next, next -= width) {
+        int mid = (curr + next) / 2;
+        merge(array, next, mid, curr);
+      }
+      // whenever array of length = pow2 is not selectable
+      // we select varied length array, which is always near
+      // the end of iteration
+      if (curr >= 2) {
+        merge(array, 0, (length % (width >> 1)), curr);
+        comparisons_count++;
+      }
     }
+    // if array not power of 2
+    if ((length % (width >> 1)) != 0)
+      merge(array, 0, length % (width >> 1), length);
+    // if array power of 2
+    else merge(array, 0, length / 2, length);
 	}
 };
